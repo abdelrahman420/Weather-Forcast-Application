@@ -94,5 +94,12 @@ dependencies {
 
 // Google Play Services Location API for accessing device location
     implementation("com.google.android.gms:play-services-location:21.1.0")
+//Lotie
+    implementation("com.airbnb.android:lottie:6.5.2")
+    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
+
+//navigation
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.1")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.8.1")
 
 }
