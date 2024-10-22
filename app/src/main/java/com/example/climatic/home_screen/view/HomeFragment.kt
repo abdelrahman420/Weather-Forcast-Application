@@ -1,34 +1,27 @@
 package com.example.climatic.home_screen.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.climatic.R
+import com.example.climatic.home_screen.viewmodel.HomeViewModel
+import com.example.climatic.home_screen.viewmodel.HomeViewModelFactory
+import com.example.climatic.model.State
+import com.example.climatic.model.database.LocalDataSourceImpl
+import com.example.climatic.model.database.WeatherDB
+import com.example.climatic.model.network.RemoteDataSourceImpl
+import com.example.climatic.model.repository.RepositoryImpl
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var homeViewModelFactory: HomeViewModelFactory
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,23 +31,34 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize ViewModel with Repository
+        homeViewModelFactory = HomeViewModelFactory(
+            RepositoryImpl.getInstance(
+                RemoteDataSourceImpl.getInstance(),
+                LocalDataSourceImpl.getInstance(WeatherDB.getInstance(requireContext()).dao())
+            )
+        )
+        homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
+
+        lifecycleScope.launch {
+            homeViewModel.forecastState.collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        Log.d("HomeFragment", "Loading data...")
+                    }
+                    is State.Success -> {
+                        val weatherData = state.weather
+                        Log.d("HomeFragment", "Weather Data: $weatherData")
+                    }
+                    is State.Error -> {
+                        Log.e("HomeFragment", "Error: ${state.message}")
+                    }
                 }
             }
+        }
+        homeViewModel.getWeatherbyLatLon(lat = 40.7128, lon = -74.0060)
     }
 }

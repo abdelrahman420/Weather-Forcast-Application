@@ -10,6 +10,10 @@ import com.example.climatic.alerts_screen.view.AlertsFragment
 import com.example.climatic.favourites_screen.view.FavouritesFragment
 import com.example.climatic.home_screen.view.HomeFragment
 import com.example.climatic.main_screen.viewmodel.MainViewModel
+import com.example.climatic.model.database.LocalDataSourceImpl
+import com.example.climatic.model.database.WeatherDB
+import com.example.climatic.model.network.RemoteDataSourceImpl
+import com.example.climatic.model.repository.RepositoryImpl
 import com.example.climatic.settings_screen.view.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -21,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         bottomNavigationView = findViewById(R.id.navView)
 
