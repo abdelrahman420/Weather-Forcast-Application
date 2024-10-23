@@ -26,6 +26,7 @@ import com.example.climatic.model.database.WeatherDB
 import com.example.climatic.model.network.RemoteDataSourceImpl
 import com.example.climatic.model.repository.RepositoryImpl
 import com.example.climatic.model.responses.HourlyResponse
+import com.example.climatic.model.responses.getFiveDaysForecast
 import com.example.climatic.model.responses.toHourlyResponse
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -35,7 +36,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class HomeFragment : Fragment() {
-
+    private val TAG = "HomeFragment"
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var homeViewModelFactory: HomeViewModelFactory
     private lateinit var tvCity: TextView
@@ -50,6 +51,12 @@ class HomeFragment : Fragment() {
     private lateinit var ivWeatherIcon: ImageView
     private lateinit var rvHourlyForecast: RecyclerView
     private lateinit var hourlyAdapter: HourlyAdapter
+    private lateinit var dailyAdapter: DailyAdapter
+    private lateinit var rvDailyForecast: RecyclerView
+    private lateinit var tvSunrise: TextView
+    private lateinit var tvSunset: TextView
+    private lateinit var tvfeelsLike: TextView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,9 +81,20 @@ class HomeFragment : Fragment() {
         tvCloudsValue = view.findViewById(R.id.tvCloudsValue)
         ivWeatherIcon = view.findViewById(R.id.ivWeatherIcon)
         rvHourlyForecast = view.findViewById(R.id.rvHourlyForecast)
-        rvHourlyForecast.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        tvSunrise = view.findViewById(R.id.tvsunrise)
+        tvSunset = view.findViewById(R.id.tvsunset)
+        tvfeelsLike = view.findViewById(R.id.tvFeelsLikeTemp)
+
+        rvHourlyForecast.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         hourlyAdapter = HourlyAdapter()
         rvHourlyForecast.adapter = hourlyAdapter
+        rvDailyForecast = view.findViewById(R.id.rvDailyForecast)
+        rvDailyForecast.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        dailyAdapter = DailyAdapter()
+        rvDailyForecast.adapter = dailyAdapter
+
 
         // Initialize ViewModel with Repository
         homeViewModelFactory = HomeViewModelFactory(
@@ -88,57 +106,89 @@ class HomeFragment : Fragment() {
         homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
 
         lifecycleScope.launch {
-            homeViewModel.forecastState.collect { state ->
+            // Collect weather state independently
+            homeViewModel.weatherState.collect { state ->
                 when (state) {
-                    is ForecastState.Loading -> {
-                        Log.d("HomeFragment", "Loading data...")
+                    is WeatherState.Loading -> {
+                        Log.d("HomeFragment", "Loading weather data...")
                     }
 
-                    is ForecastState.Success -> {
-                        Log.d("HomeFragment", "${state.forecast}")
-                        tvCity.text = state.forecast.city?.name
-                        tvTemperature.text = "${state.forecast.list[0].main?.temp}°C"
-                        tvWeatherDescription.text = state.forecast.list[0].weather[0].description
+                    is WeatherState.Success -> {
+                        // Update the weather data in the UI
+                        tvCity.text = state.weather.name
+                        tvTemperature.text = "${state.weather.main?.temp}°C"
+                        tvWeatherDescription.text = state.weather.weather[0].description
 
-                        tvHumidityValue.text = "${state.forecast.list[0].main?.humidity}%"
-                        tvWindSpeedValue.text = "${state.forecast.list[0].wind?.speed} km/h"
-                        tvPressureValue.text = "${state.forecast.list[0].main?.pressure} hPa"
-                        tvCloudsValue.text = "${state.forecast.list[0].clouds?.all}%"
 
-                        val timestamp = state.forecast.list[0].dt?: 0
+                        val iconId = "w${state.weather.weather[0].icon}"
+                        val resourceId = requireContext().resources?.getIdentifier(iconId, "drawable", requireContext().packageName)
+                        Glide.with(requireContext())
+                            .load(resourceId)
+                            .placeholder(R.drawable.ic_launcher_background)
+                            .into(ivWeatherIcon)
+
+                        tvHumidityValue.text = "${state.weather.main?.humidity}%"
+                        tvWindSpeedValue.text = "${state.weather.wind?.speed} km/h"
+                        tvPressureValue.text = "${state.weather.main?.pressure} hPa"
+                        tvCloudsValue.text = "${state.weather.clouds?.all}%"
+                        tvfeelsLike.text = "${state.weather.main?.feelsLike}°C"
+
+
+                        val sunriseTimestamp = state.weather.sys?.sunrise ?: 0
+                        val sunsetTimestamp = state.weather.sys?.sunset ?: 0
+                        val sunriseInstant = Instant.ofEpochSecond(sunriseTimestamp.toLong())
+                        val sunsetInstant = Instant.ofEpochSecond(sunsetTimestamp.toLong())
+
+                        val timestamp = state.weather.dt ?: 0
                         val instant = Instant.ofEpochSecond(timestamp)
 
-                        // Formatter for date (yyyy-MM-dd)
                         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                             .withZone(ZoneId.of("UTC"))
                         val date = dateFormatter.format(instant)
 
-                        // Formatter for time (HH:mm:ss)
                         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
                             .withZone(ZoneId.of("UTC"))
                         val time = timeFormatter.format(instant)
+                        val sunriseTime = timeFormatter.format(sunriseInstant)
+                        val sunsetTime = timeFormatter.format(sunsetInstant)
 
+                        tvSunrise.text = sunriseTime
+                        tvSunset.text = sunsetTime
                         tvDate.text = date
                         tvTime.text = time
-
-
-
-                        Glide.with(requireContext())
-                            .load(R.drawable.cloudy)
-                            .placeholder(R.drawable.ic_launcher_background)
-                            .into(ivWeatherIcon)
-
-                        val hourlyResponse: HourlyResponse = state.forecast.toHourlyResponse()
-                        Log.d("HourlyResponse", "Filtered hourly forecasts count: ${hourlyResponse}")
-                        hourlyAdapter.submitList(hourlyResponse.list)
                     }
 
-                    is ForecastState.Error -> {
-                        Log.e("HomeFragment", "Error: ${state.message}")
+                    is WeatherState.Error -> {
+                        Log.e(TAG, "Error: ${state.message}")
                     }
                 }
             }
         }
-        homeViewModel.getForecastByCity(city = "Cairo")
+        lifecycleScope.launch {
+            homeViewModel.forecastState.collect { state ->
+                when (state) {
+                    is ForecastState.Loading -> {
+                        Log.d("HomeFragment", "Loading forecast data...")
+                    }
+
+                    is ForecastState.Success -> {
+                        val hourlyResponse= state.forecast.toHourlyResponse()
+                        Log.d(TAG, "Filtered hourly forecasts count: ${hourlyResponse}")
+                        hourlyAdapter.submitList(hourlyResponse)
+                        val daysResponse = state.forecast.getFiveDaysForecast()
+                        Log.d(TAG, "Filtered days forecasts count: ${daysResponse}")
+
+                        dailyAdapter.submitList(daysResponse)
+
+                    }
+
+                    is ForecastState.Error -> {
+                        Log.e(TAG, "Error: ${state.message}")
+                    }
+                }
+            }
+        }
+        homeViewModel.getWeatherbyCity("London")
+        homeViewModel.getForecastByCity("London")
     }
 }

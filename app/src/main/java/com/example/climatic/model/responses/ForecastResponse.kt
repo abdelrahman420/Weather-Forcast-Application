@@ -7,6 +7,8 @@ import com.example.climatic.model.dtos.Main
 import com.example.climatic.model.dtos.Weather
 import com.example.climatic.model.dtos.Wlist
 import com.google.gson.annotations.SerializedName
+import java.util.Calendar
+import java.util.Date
 
 @Entity(tableName = "locations_table")
 data class ForecastResponse(
@@ -18,25 +20,17 @@ data class ForecastResponse(
     @SerializedName("list") var list: ArrayList<Wlist> = arrayListOf(),
     @SerializedName("city") var city: City? = City()
 )
-fun ForecastResponse.toHourlyResponse(): HourlyResponse {
-    val hourlyForecasts = this.list.mapNotNull { wlist ->
-        // Extracting values based on your provided JSON
-        val dtTxt = wlist.dtTxt
-        val temp = wlist.main?.temp
-        val icon = wlist.weather.firstOrNull()?.icon
-
-        if (dtTxt != null) {
-            HourlyForecast(
-                dt_txt = dtTxt,
-                temp = temp,
-                icon = icon
-            )
-        } else {
-            null
-        }
-    }.take(8)
-
-    return HourlyResponse(list = hourlyForecasts)
+fun ForecastResponse.toHourlyResponse(): List<Wlist> {
+    // Take the first 8 elements from the list of Wlist items
+    return list.take(8)
 }
+
+
+fun ForecastResponse.getFiveDaysForecast(): List<Wlist> {
+    val indices = (0 until 5).map { it * 8 }
+    return indices.filter { it < list.size }.map { list[it] }
+}
+
+
 
 

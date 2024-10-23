@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.climatic.R
+import com.example.climatic.model.dtos.Wlist
 import com.example.climatic.model.responses.ForecastResponse
 import com.example.climatic.model.responses.HourlyForecast
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class HourlyAdapter : ListAdapter<HourlyForecast, HourlyAdapter.ViewHolder>(HourlyDiffUtil()){
+class HourlyAdapter : ListAdapter<Wlist, HourlyAdapter.ViewHolder>(HourlyDiffUtil()){
 
     class ViewHolder(private val item: View) : RecyclerView.ViewHolder(item) {
         val tvTemperature: TextView = item.findViewById(R.id.tvTemp)
@@ -29,20 +32,24 @@ class HourlyAdapter : ListAdapter<HourlyForecast, HourlyAdapter.ViewHolder>(Hour
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currentForecast = getItem(position)
-        val formattedTime = formatDateTime(currentForecast.dt_txt)
-        holder.tvTemperature.text = "${currentForecast.temp} °C"
+        val hourForecast = getItem(position)
+        val formattedTime = formatDateTime(hourForecast.dtTxt)
+        holder.tvTemperature.text = "${hourForecast.main?.temp} °C"
         holder.tvHour.text = formattedTime
 
-        val iconUrl = "http://openweathermap.org/img/wn/${currentForecast.icon}.png"
-        Glide.with(holder.itemView.context)
-            .load(iconUrl)
+        val iconId = "w${hourForecast.weather.firstOrNull()?.icon}"
+        val context = holder.itemView.context
+        val resourceId = context.resources.getIdentifier(iconId, "drawable", context.packageName)
+        Glide.with(context)
+            .load(resourceId)
             .placeholder(R.drawable.ic_launcher_background)
             .into(holder.ivIcon)
     }
     private fun formatDateTime(dateTime: String?): String?{
-        // Extract time from dt_txt, assuming format "YYYY-MM-DD HH:MM:SS"
-        return dateTime?.split(" ")?.get(1) // This returns just the time part
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val date = inputFormat.parse(dateTime)
+        return outputFormat.format(date)
     }
 }
 
