@@ -11,7 +11,8 @@ interface RetrofitService {
     suspend fun getCurrentWeatherbyCity(
         @Query("q") city: String,
         @Query("appid") apiKey: String,
-        @Query("units") units: String = "metric"
+        @Query("units") units: String = "metric",
+        @Query("lang") language: String = "en"
     ): Response<WeatherResponse>
 
     @GET("data/2.5/weather")
@@ -19,14 +20,16 @@ interface RetrofitService {
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("appid") apiKey: String,
-        @Query("units") units: String = "metric"
+        @Query("units") units: String = "metric",
+        @Query("lang") language: String = "en"
     ): Response<WeatherResponse>
 
     @GET("data/2.5/forecast")
     suspend fun getWeatherForecastByCity(
         @Query("q") city: String,
         @Query("appid") apiKey: String,
-        @Query("units") units: String = "metric"
+        @Query("units") units: String = "metric",
+        @Query("lang") language: String = "en"
     ): Response<ForecastResponse>
 
     @GET("data/2.5/forecast")
@@ -34,7 +37,8 @@ interface RetrofitService {
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("appid") apiKey: String,
-        @Query("units") units: String = "metric"
+        @Query("units") units: String = "metric",
+        @Query("lang") language: String = "en"
     ): Response<ForecastResponse>
 
 

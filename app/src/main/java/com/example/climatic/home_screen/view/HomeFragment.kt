@@ -25,15 +25,12 @@ import com.example.climatic.model.database.LocalDataSourceImpl
 import com.example.climatic.model.database.WeatherDB
 import com.example.climatic.model.network.RemoteDataSourceImpl
 import com.example.climatic.model.repository.RepositoryImpl
-import com.example.climatic.model.responses.HourlyResponse
 import com.example.climatic.model.responses.getFiveDaysForecast
 import com.example.climatic.model.responses.toHourlyResponse
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 class HomeFragment : Fragment() {
     private val TAG = "HomeFragment"
@@ -148,9 +145,11 @@ class HomeFragment : Fragment() {
 
                         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
                             .withZone(ZoneId.of("UTC"))
-                        val time = timeFormatter.format(instant)
-                        val sunriseTime = timeFormatter.format(sunriseInstant)
-                        val sunsetTime = timeFormatter.format(sunsetInstant)
+                        val time = timeFormatter.format(instant.plusSeconds(state.weather.timezone?.toLong()
+                            ?: 0))
+
+                        val sunriseTime = timeFormatter.format(sunriseInstant.plusSeconds(state.weather.timezone?.toLong() ?: 0))
+                        val sunsetTime = timeFormatter.format(sunsetInstant.plusSeconds(state.weather.timezone?.toLong() ?: 0))
 
                         tvSunrise.text = sunriseTime
                         tvSunset.text = sunsetTime
@@ -188,7 +187,7 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-        homeViewModel.getWeatherbyCity("London")
-        homeViewModel.getForecastByCity("London")
+        homeViewModel.getWeatherbyCity("Cairo,Egypt")
+        homeViewModel.getForecastByCity("Cairo,Egypt")
     }
 }

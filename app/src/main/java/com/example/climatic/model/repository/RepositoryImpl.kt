@@ -34,9 +34,10 @@ class RepositoryImpl(
     override suspend fun _getCurrentWeatherByCity(
         city: String,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Flow<WeatherResponse> = flow {
-        val response = remoteDataSource.getCurrentWeatherByCity(city, apiKey, units)
+        val response = remoteDataSource.getCurrentWeatherByCity(city, apiKey, units, language)
         if (response.isSuccessful) {
             val weatherResponse = response.body()
             weatherResponse?.let {
@@ -50,9 +51,10 @@ class RepositoryImpl(
         lat: Double,
         lon: Double,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Flow<WeatherResponse> = flow {
-        val response = remoteDataSource.getCurrentWeatherByLatLon(lat, lon, apiKey, units)
+        val response = remoteDataSource.getCurrentWeatherByLatLon(lat, lon, apiKey, units, language)
         if (response.isSuccessful) {
             val weatherResponse = response.body()
             weatherResponse?.let {
@@ -65,9 +67,10 @@ class RepositoryImpl(
     override suspend fun _getWeatherForecastByCity(
         city: String,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Flow<ForecastResponse> = flow {
-        val response = remoteDataSource.getWeatherForecastByCity(city, apiKey, units)
+        val response = remoteDataSource.getWeatherForecastByCity(city, apiKey, units, language)
         if (response.isSuccessful) {
             val forecastResponse = response.body()
             forecastResponse?.let {
@@ -82,9 +85,10 @@ class RepositoryImpl(
         lat: Double,
         lon: Double,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Flow<ForecastResponse> =  flow {
-        val response = remoteDataSource.getWeatherForecastByLatLon(lat, lon, apiKey, units)
+        val response = remoteDataSource.getWeatherForecastByLatLon(lat, lon, apiKey, units, language)
         if (response.isSuccessful) {
             val forecastResponse = response.body()
             forecastResponse?.let {

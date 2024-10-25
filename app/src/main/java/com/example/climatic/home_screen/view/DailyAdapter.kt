@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +29,8 @@ class DailyAdapter : ListAdapter<Wlist, DailyAdapter.ViewHolder>(DailyDiffUtil()
         val iconImageView: ImageView = itemView.findViewById(R.id.image_weather_description)
         val tvMax: TextView = itemView.findViewById(R.id.tvMax)
         val tvMin: TextView = itemView.findViewById(R.id.tvMin)
+        val detailsLayout: LinearLayout = itemView.findViewById(R.id.details_layout)
+        val seeMoreTextView: TextView = itemView.findViewById(R.id.tv_SeeMore)
 
 
     }
@@ -61,6 +64,19 @@ class DailyAdapter : ListAdapter<Wlist, DailyAdapter.ViewHolder>(DailyDiffUtil()
             .load(resourceId)
             .placeholder(R.drawable.ic_launcher_background)
             .into(holder.iconImageView)
+
+        holder.detailsLayout.visibility = View.GONE // Initially hide details
+
+        holder.seeMoreTextView.setOnClickListener {
+            // Toggle the visibility of the details layout
+            if (holder.detailsLayout.visibility == View.GONE) {
+                holder.detailsLayout.visibility = View.VISIBLE
+                holder.seeMoreTextView.text = "See Less" // Change the text to See Less
+            } else {
+                holder.detailsLayout.visibility = View.GONE
+                holder.seeMoreTextView.text = "See More" // Change the text back to See More
+            }
+        }
 
     }
 }

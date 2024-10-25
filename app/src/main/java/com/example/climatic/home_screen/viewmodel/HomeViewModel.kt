@@ -18,9 +18,9 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
     private val _forecastState = MutableStateFlow<ForecastState>(ForecastState.Loading)
     val forecastState: StateFlow<ForecastState> = _forecastState
 
-    fun getWeatherbyLatLon(lat: Double, lon: Double, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric") {
+    fun getWeatherbyLatLon(lat: Double, lon: Double, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric", language: String = "en") {
         viewModelScope.launch(Dispatchers.IO) {
-            repository._getCurrentWeatherByLatLon(lat, lon, apiKey, units)
+            repository._getCurrentWeatherByLatLon(lat, lon, apiKey, units, language)
                 .catch{ exception ->
                     _weatherState.value = WeatherState.Error("Error: ${exception.message}")
                 }
@@ -34,9 +34,9 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
-    fun getWeatherbyCity(city: String, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric") {
+    fun getWeatherbyCity(city: String, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric", language: String = "en") {
         viewModelScope.launch(Dispatchers.IO) {
-            repository._getCurrentWeatherByCity(city, apiKey, units)
+            repository._getCurrentWeatherByCity(city, apiKey, units, language)
                 .catch{ exception ->
                     _weatherState.value = WeatherState.Error("Error: ${exception.message}")
                 }
@@ -49,9 +49,9 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
                 }
         }
     }
-    fun getForecastByLatLon(lat: Double, lon: Double, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric") {
+    fun getForecastByLatLon(lat: Double, lon: Double, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric", language: String = "en") {
         viewModelScope.launch(Dispatchers.IO) {
-            repository._getWeatherForecastByLatLon(lat, lon, apiKey, units)
+            repository._getWeatherForecastByLatLon(lat, lon, apiKey, units, language)
                 .catch{ exception ->
                     _forecastState.value = ForecastState.Error("Error: ${exception.message}")
                 }
@@ -65,9 +65,9 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
-    fun getForecastByCity(city: String, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric") {
+    fun getForecastByCity(city: String, apiKey: String = "74eea8bc50e4e92c23d95d31ee9f948e", units: String = "metric", language: String = "en") {
         viewModelScope.launch(Dispatchers.IO) {
-            repository._getWeatherForecastByCity(city, apiKey, units)
+            repository._getWeatherForecastByCity(city, apiKey, units, language)
                 .catch{ exception ->
                     _forecastState.value = ForecastState.Error("Error: ${exception.message}")
                 }

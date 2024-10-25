@@ -21,34 +21,38 @@ class RemoteDataSourceImpl : RemoteDataSource {
     override suspend fun getCurrentWeatherByCity(
         city: String,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Response<WeatherResponse> {
-        return retrofitService.getCurrentWeatherbyCity(city, apiKey, units)
+        return retrofitService.getCurrentWeatherbyCity(city, apiKey, units, language)
     }
 
     override suspend fun getCurrentWeatherByLatLon(
         lat: Double,
         lon: Double,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Response<WeatherResponse> {
-        return retrofitService.getCurrentWeatherByLatLon(lat, lon, apiKey, units)
+        return retrofitService.getCurrentWeatherByLatLon(lat, lon, apiKey, units, language)
     }
 
     override suspend fun getWeatherForecastByCity(
         city: String,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Response<ForecastResponse> {
-        return retrofitService.getWeatherForecastByCity(city, apiKey, units)
+        return retrofitService.getWeatherForecastByCity(city, apiKey, units, language)
     }
 
     override suspend fun getWeatherForecastByLatLon(
         lat: Double,
         lon: Double,
         apiKey: String,
-        units: String
+        units: String,
+        language: String
     ): Response<ForecastResponse> {
-        return retrofitService.getWeatherForecastByLatLon(lat, lon, apiKey, units)
+        return retrofitService.getWeatherForecastByLatLon(lat, lon, apiKey, units, language)
     }
 }
