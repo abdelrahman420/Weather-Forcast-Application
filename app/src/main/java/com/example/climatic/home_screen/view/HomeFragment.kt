@@ -1,16 +1,24 @@
 package com.example.climatic.home_screen.view
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
-import android.os.Build
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
+import android.provider.Settings
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +35,13 @@ import com.example.climatic.model.network.RemoteDataSourceImpl
 import com.example.climatic.model.repository.RepositoryImpl
 import com.example.climatic.model.responses.getFiveDaysForecast
 import com.example.climatic.model.responses.toHourlyResponse
+import com.example.climatic.settings_screen.viewmodel.SettingsViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
@@ -36,6 +51,7 @@ class HomeFragment : Fragment() {
     private val TAG = "HomeFragment"
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var homeViewModelFactory: HomeViewModelFactory
+    private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var tvCity: TextView
     private lateinit var tvTemperature: TextView
     private lateinit var tvWeatherDescription: TextView
@@ -53,13 +69,16 @@ class HomeFragment : Fragment() {
     private lateinit var tvSunrise: TextView
     private lateinit var tvSunset: TextView
     private lateinit var tvfeelsLike: TextView
-
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var lattitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private val REQUEST_LOCATION_CODE = 101
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -92,13 +111,15 @@ class HomeFragment : Fragment() {
         dailyAdapter = DailyAdapter()
         rvDailyForecast.adapter = dailyAdapter
 
+        settingsViewModel = ViewModelProvider(this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
+        ).get(SettingsViewModel::class.java)
 
-        // Initialize ViewModel with Repository
         homeViewModelFactory = HomeViewModelFactory(
             RepositoryImpl.getInstance(
                 RemoteDataSourceImpl.getInstance(),
                 LocalDataSourceImpl.getInstance(WeatherDB.getInstance(requireContext()).dao())
-            )
+            ),settingsViewModel
         )
         homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
 
@@ -107,7 +128,7 @@ class HomeFragment : Fragment() {
             homeViewModel.weatherState.collect { state ->
                 when (state) {
                     is WeatherState.Loading -> {
-                        Log.d("HomeFragment", "Loading weather data...")
+                        Log.d(TAG, "Loading weather data...")
                     }
 
                     is WeatherState.Success -> {
@@ -124,8 +145,14 @@ class HomeFragment : Fragment() {
                             .placeholder(R.drawable.ic_launcher_background)
                             .into(ivWeatherIcon)
 
+                        Thread {
+                            Glide.get(requireContext()).clearDiskCache()
+                        }.start()
+
+                        Glide.get(requireContext()).clearMemory()
+
                         tvHumidityValue.text = "${state.weather.main?.humidity}%"
-                        tvWindSpeedValue.text = "${state.weather.wind?.speed} km/h"
+                        tvWindSpeedValue.text = "${state.weather.wind?.speed}"
                         tvPressureValue.text = "${state.weather.main?.pressure} hPa"
                         tvCloudsValue.text = "${state.weather.clouds?.all}%"
                         tvfeelsLike.text = "${state.weather.main?.feelsLike}°C"
@@ -155,6 +182,8 @@ class HomeFragment : Fragment() {
                         tvSunset.text = sunsetTime
                         tvDate.text = date
                         tvTime.text = time
+
+                        Log.d(TAG, "Weather data updated: ${state.weather}")
                     }
 
                     is WeatherState.Error -> {
@@ -187,7 +216,72 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-        homeViewModel.getWeatherbyCity("Cairo,Egypt")
-        homeViewModel.getForecastByCity("Cairo,Egypt")
+    }
+
+    fun checkPermissions(): Boolean {
+        return ((checkSelfPermission(requireContext(),ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (checkSelfPermission(requireContext(),ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED))
+    }
+    fun enableLocationServices(){
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        startActivity(intent)
+    }
+
+    fun isLocationEnabled():Boolean{
+        val locationManager: LocationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER)
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getFreshLocation(){
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        fusedLocationProviderClient.requestLocationUpdates(
+            LocationRequest.Builder(0).apply{
+                setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+            }.build(),
+            object : LocationCallback() {
+                override fun onLocationResult(location: LocationResult) {
+                    super.onLocationResult(location)
+                    longitude = location.lastLocation?.longitude?:0.0
+                    lattitude = location.lastLocation?.latitude?:0.0
+                    homeViewModel.getWeatherbyLatLon(location.lastLocation?.latitude!!, location.lastLocation?.longitude!!)
+                    homeViewModel.getForecastByLatLon(location.lastLocation?.latitude!!,location.lastLocation?.longitude!!)
+                }
+            },
+            Looper.myLooper()
+        )
+    }
+    fun onRequestPermessionsResult(requestCode:Int,permissions:Array<out String>,grantResults:IntArray)
+    {
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults)
+        if(requestCode==REQUEST_LOCATION_CODE){
+            if(grantResults.size>1 && grantResults.get(0)== PackageManager.PERMISSION_GRANTED)
+            {
+                getFreshLocation()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onStart() {
+        super.onStart()
+        if(checkPermissions()) {
+            if (isLocationEnabled()) {
+                getFreshLocation()
+            } else {
+                enableLocationServices()
+            }
+        }else{
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    ACCESS_FINE_LOCATION,
+                    ACCESS_COARSE_LOCATION
+                ),
+                REQUEST_LOCATION_CODE
+            )
+        }
     }
 }

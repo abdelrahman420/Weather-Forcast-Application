@@ -1,5 +1,39 @@
 <resources>
     <string name="app_name">Climatic</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="settings_title">Settings</string>
+    <string name="language_settings_title">Language Settings</string>
+    <string name="choose_language">Choose Language:</string>
+    <string name="arabic">Arabic</string>
+    <string name="english">English</string>
+    <string name="location_settings_title">Location Settings</string>
+    <string name="gps">GPS</string>
+    <string name="map">Map</string>
+    <string name="temperature_settings_title">Temperature Settings</string>
+    <string name="choose_temperature_unit">Choose Temperature Unit:</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="celsius">Celsius</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="wind_speed_settings_title">Wind Speed Settings</string>
+    <string name="choose_wind_speed_unit">Choose Wind Speed Unit:</string>
+    <string name="mph">MPH</string>
+    <string name="mps">MPS</string>
+    <string name="sunrise_label">sunrise :</string>
+    <string name="sunset_label">sunset :</string>
+    <string name="feels_like_label">Feels Like :</string>
+    <string name="today_label">Today</string>
+    <string name="weather_details_label">Weather Details</string>
+    <string name="humidity_label">Humidity:</string>
+    <string name="wind_speed_label">Wind Speed:</string>
+    <string name="pressure_label">Pressure:</string>
+    <string name="clouds_label">Clouds:</string>
+    <string name="clear_sky">clear sky</string>
+    <string name="default_city_name">City Name</string>
+    <string name="daily_forecast_label">Daily Forecast</string>
+
+    <string-array name="alarm_types">
+        <item>Default</item>
+        <item>Sound</item>
+    </string-array>
+
+
 </resources>

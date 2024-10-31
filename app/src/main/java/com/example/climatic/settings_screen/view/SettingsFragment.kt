@@ -5,56 +5,90 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import androidx.lifecycle.ViewModelProvider
 import com.example.climatic.R
+import com.example.climatic.settings_screen.viewmodel.SettingsViewModel
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private lateinit var settingsViewModel: SettingsViewModel
+    var flag: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        settingsViewModel = ViewModelProvider(this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
+        ).get(SettingsViewModel::class.java)
+        val radioGroup = view.findViewById<RadioGroup>(R.id.language_group)
+        val radioArabic = view.findViewById<RadioButton>(R.id.language_arabic)
+        val radioEnglish = view.findViewById<RadioButton>(R.id.language_english)
+
+       // settingsViewModel = ViewModelProvider(requireActivity()).get(SettingsViewModel::class.java)
+        settingsViewModel.selectedLanguage.observe(viewLifecycleOwner) { language ->
+            when (language) {
+                "ar" -> radioGroup.check(radioArabic.id)
+                "en" -> radioGroup.check(radioEnglish.id)
             }
+        }
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val selectedLanguage = when (checkedId) {
+                R.id.language_arabic -> "ar"
+                R.id.language_english -> "en"
+                else -> "en"
+            }
+            settingsViewModel.setLanguage(selectedLanguage)
+        }
+
+
+        val temperatureUnitGroup = view.findViewById<RadioGroup>(R.id.temperature_unit_group)
+        val radioCelsius = view.findViewById<RadioButton>(R.id.temperature_celsius)
+        val radioKelvin = view.findViewById<RadioButton>(R.id.temperature_kelvin)
+        val radioFahrenheit = view.findViewById<RadioButton>(R.id.temperature_fahrenheit)
+
+        // Observe selected temperature unit
+        settingsViewModel.selectedTemperatureUnit.observe(viewLifecycleOwner) { unit ->
+            when (unit) {
+                "standard" -> temperatureUnitGroup.check(radioKelvin.id)
+                "imperial" -> temperatureUnitGroup.check(radioFahrenheit.id)
+                "metric" -> temperatureUnitGroup.check(radioCelsius.id)
+            }
+        }
+        temperatureUnitGroup.setOnCheckedChangeListener { _, checkedId ->
+            val selectedUnit = when (checkedId) {
+                R.id.temperature_kelvin -> "standard"
+                R.id.temperature_fahrenheit -> "imperial"
+                R.id.temperature_celsius -> "metric"
+                else -> "metric"
+            }
+            settingsViewModel.setTemperatureUnit(selectedUnit)
+        }
+
+        val windSpeedUnitGroup = view.findViewById<RadioGroup>(R.id.wind_speed_unit_group)
+        val radioMPS = view.findViewById<RadioButton>(R.id.speed_mps)
+        val radioMPH = view.findViewById<RadioButton>(R.id.speed_mph)
+        settingsViewModel.selectedWindSpeedUnit.observe(viewLifecycleOwner) { unit ->
+            when (unit) {
+                "metric" -> windSpeedUnitGroup.check(radioMPS.id)
+                "imperial" -> windSpeedUnitGroup.check(radioMPH.id)
+            }
+        }
+        windSpeedUnitGroup.setOnCheckedChangeListener{ _, checkedId ->
+            val selectedUnit = when (checkedId) {
+                R.id.speed_mph -> "imperial"
+                R.id.speed_mps -> "metric"
+                else -> "metric"
+            }
+            settingsViewModel.setWindSpeedUnit(selectedUnit)
+        }
     }
 }

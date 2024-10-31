@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">المناخ</string>
+    <string name="settings_title">الإعدادات</string>
+    <string name="language_settings_title">إعدادات اللغة</string>
+    <string name="choose_language">اختر اللغة:</string>
+    <string name="arabic">العربية</string>
+    <string name="english">الإنجليزية</string>
+    <string name="location_settings_title">إعدادات الموقع</string>
+    <string name="gps">جي بي اس</string>
+    <string name="map">الخريطة</string>
+    <string name="temperature_settings_title">إعدادات درجة الحرارة</string>
+    <string name="choose_temperature_unit">اختر وحدة درجة الحرارة:</string>
+    <string name="kelvin">كلفن</string>
+    <string name="celsius">سيلزيوس</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="wind_speed_settings_title">إعدادات سرعة الرياح</string>
+    <string name="choose_wind_speed_unit">اختر وحدة سرعة الرياح:</string>
+    <string name="mph">ميل/س</string>
+    <string name="mps">متر/ث</string>
+    <string name="sunrise_label">شروق الشمس :</string>
+    <string name="sunset_label">غروب الشمس :</string>
+    <string name="feels_like_label">تشعر كأنها :</string>
+    <string name="today_label">اليوم</string>
+    <string name="weather_details_label">تفاصيل الطقس</string>
+    <string name="humidity_label">الرطوبة:</string>
+    <string name="wind_speed_label">سرعة الرياح:</string>
+    <string name="pressure_label">الضغط:</string>
+    <string name="clouds_label">الغيوم:</string>
+    <string name="clear_sky">سماء صافية</string>
+    <string name="default_city_name">اسم المدينة</string>
+    <string name="daily_forecast_label">التوقعات اليومية</string>
+
+</resources>

@@ -102,4 +102,8 @@ dependencies {
     implementation ("androidx.navigation:navigation-fragment-ktx:2.8.1")
     implementation ("androidx.navigation:navigation-ui-ktx:2.8.1")
 
+//settings
+    dependencies {
+        implementation("androidx.preference:preference-ktx:1.2.0")
+    }
 }
