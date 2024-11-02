@@ -74,6 +74,13 @@ class HomeFragment : Fragment() {
     private var longitude: Double = 0.0
     private val REQUEST_LOCATION_CODE = 101
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            lattitude = it.getDouble("latitude")
+            longitude = it.getDouble("longitude")
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

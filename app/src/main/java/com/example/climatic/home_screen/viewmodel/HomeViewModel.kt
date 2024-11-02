@@ -37,11 +37,9 @@ class HomeViewModel(
         }
         settingsViewModel.selectedTemperatureUnit.observeForever { unit ->
             currentTemperatureUnit = unit
-
         }
         settingsViewModel.selectedWindSpeedUnit.observeForever { unit ->
             currentWindSpeedUnit = unit
-
         }
     }
 

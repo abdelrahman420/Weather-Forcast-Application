@@ -11,7 +11,7 @@ import com.example.climatic.alerts_screen.view.AlarmFragment
 import com.example.climatic.home_screen.view.HomeFragment
 import com.example.climatic.main_screen.viewmodel.MainViewModel
 import com.example.climatic.settings_screen.view.SettingsFragment
-import com.example.climatic.utils.LanguageManager
+import com.example.climatic.utils.LanguageUtils
 import com.example.weather.favourites_screen.view.FavouritesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        LanguageUtils.setAppLocale(this, LanguageUtils.getPersistedLanguage(this))
         bottomNavigationView = findViewById(R.id.navView)
 
         mainViewModel.currentFragment.observe(this, Observer { fragment ->
@@ -49,11 +49,5 @@ class MainActivity : AppCompatActivity() {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.frameLayout, fragment)
         transaction.commit()
-    }
-    override fun attachBaseContext(newBase: Context?) {
-        val sharedPreferences = newBase?.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val selectedLanguage = sharedPreferences?.getString("language", "en") ?: "en"
-        val context = newBase?.let { LanguageManager.updateLanguage(it, selectedLanguage) }
-        super.attachBaseContext(context)
     }
 }
