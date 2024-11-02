@@ -8,11 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.example.climatic.R
 import com.example.climatic.alerts_screen.view.AlarmFragment
-import com.example.climatic.favourites_screen.view.FavouritesFragment
 import com.example.climatic.home_screen.view.HomeFragment
 import com.example.climatic.main_screen.viewmodel.MainViewModel
 import com.example.climatic.settings_screen.view.SettingsFragment
 import com.example.climatic.utils.LanguageManager
+import com.example.weather.favourites_screen.view.FavouritesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

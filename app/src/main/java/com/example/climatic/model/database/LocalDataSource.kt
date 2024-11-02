@@ -1,13 +1,14 @@
 package com.example.climatic.model.database
 
+import com.example.climatic.model.dtos.Favourites
 import com.example.climatic.model.responses.ForecastResponse
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDataSource {
-    suspend fun getAllLocations(): Flow<List<ForecastResponse>>
-    suspend fun insertLocation(location: ForecastResponse): Long
-    suspend fun insertLocations(locations: List<ForecastResponse>): List<Long>
+    suspend fun getAllFavLocations(): Flow<List<Favourites>>
+    suspend fun insertFavLocation(location: Favourites): Long
+    suspend fun insertLocations(locations: List<Favourites>): List<Long>
+    suspend fun deleteFavLocation(location: Favourites): Int
     suspend fun getLocationsCount(): Int
     suspend fun updateLocation(location: ForecastResponse)
-    suspend fun deleteLocation(location: ForecastResponse): Int
 }

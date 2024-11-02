@@ -65,7 +65,7 @@ class AlarmFragment : Fragment() {
         val selectedAlarmType = alarmTypeSpinner.selectedItem.toString()
 
         if (duration > 0) {
-            viewModel.setAlert(duration, selectedAlarmType) // Pass the selected alarm type
+            viewModel.setAlert(duration, selectedAlarmType)
             Toast.makeText(requireContext(), "Alarm set for $hour:$minute with type $selectedAlarmType", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(requireContext(), "Please select a future time.", Toast.LENGTH_SHORT).show()

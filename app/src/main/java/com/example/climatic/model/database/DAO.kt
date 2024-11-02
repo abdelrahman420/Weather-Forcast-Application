@@ -6,27 +6,28 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.climatic.model.dtos.Favourites
 import com.example.climatic.model.responses.ForecastResponse
 import com.example.climatic.model.responses.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DAO {
-    @Query("SELECT * FROM locations_table")
-    fun allLocations(): Flow<List<ForecastResponse>>
+    @Query("SELECT * FROM favourites")
+    fun allFavLocations(): Flow<List<Favourites>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertLocation(location: ForecastResponse): Long
+    suspend fun insertFavLocation(location: Favourites): Long
+    @Delete
+    fun deleteFavLocation(location: Favourites) : Int
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertLocations(locations: List<ForecastResponse>): List<Long>
+    suspend fun insertLocations(locations: List<Favourites>): List<Long>
 
-    @Query("SELECT COUNT(*) FROM locations_table")
+    @Query("SELECT COUNT(*) FROM forecast_table")
     suspend fun getLocationsCount(): Int
 
     @Update
     suspend fun updateLocation(location: ForecastResponse)
 
-    @Delete
-    fun deleteLocation(location: ForecastResponse) : Int
 }

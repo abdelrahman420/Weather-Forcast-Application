@@ -9,7 +9,7 @@ import com.example.climatic.model.dtos.Weather
 import com.example.climatic.model.dtos.Wind
 import com.google.gson.annotations.SerializedName
 
-
+@Entity(tableName = "weather_table")
 data class WeatherResponse(
 
     @SerializedName("coord") var coord: Coord? = Coord(),

@@ -3,14 +3,11 @@ package com.example.climatic.model.responses
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.climatic.model.dtos.City
-import com.example.climatic.model.dtos.Main
-import com.example.climatic.model.dtos.Weather
 import com.example.climatic.model.dtos.Wlist
 import com.google.gson.annotations.SerializedName
-import java.util.Calendar
-import java.util.Date
 
-@Entity(tableName = "locations_table")
+
+@Entity(tableName = "forecast_table")
 data class ForecastResponse(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
@@ -21,7 +18,6 @@ data class ForecastResponse(
     @SerializedName("city") var city: City? = City()
 )
 fun ForecastResponse.toHourlyResponse(): List<Wlist> {
-    // Take the first 8 elements from the list of Wlist items
     return list.take(8)
 }
 

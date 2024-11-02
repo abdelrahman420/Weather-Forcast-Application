@@ -1,6 +1,7 @@
 package com.example.climatic.model.repository
 
 import com.example.climatic.model.database.LocalDataSource
+import com.example.climatic.model.dtos.Favourites
 import com.example.climatic.model.network.RemoteDataSource
 import com.example.climatic.model.responses.ForecastResponse
 import com.example.climatic.model.responses.WeatherResponse
@@ -98,18 +99,22 @@ class RepositoryImpl(
             throw Exception("Failed to fetch weather forecast: ${response.message()}")
         }
     }
-    override suspend fun _getAllLocations(): Flow<List<ForecastResponse>> {
-        return localDataSource.getAllLocations()
+
+    override suspend fun _getAllFavLocations(): Flow<List<Favourites>> {
+        return localDataSource.getAllFavLocations()
     }
 
-    override suspend fun _insertLocation(location: ForecastResponse): Long {
-        return localDataSource.insertLocation(location)
+    override suspend fun _insertFavLocation(location: Favourites): Long {
+        return localDataSource.insertFavLocation(location)
     }
 
-    override suspend fun _insertLocations(locations: List<ForecastResponse>): List<Long> {
+    override suspend fun _insertLocations(locations: List<Favourites>): List<Long> {
         return localDataSource.insertLocations(locations)
     }
 
+    override suspend fun _deleteFavLocation(location: Favourites): Int {
+        return localDataSource.deleteFavLocation(location)
+    }
     override suspend fun _getLocationsCount(): Int {
         return localDataSource.getLocationsCount()
     }
@@ -118,7 +123,4 @@ class RepositoryImpl(
         return localDataSource.updateLocation(location)
     }
 
-    override suspend fun _deleteLocation(location: ForecastResponse): Int {
-        return localDataSource.deleteLocation(location)
-    }
 }

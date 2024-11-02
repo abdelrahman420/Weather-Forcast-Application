@@ -1,5 +1,6 @@
 package com.example.climatic.model.database
 
+import com.example.climatic.model.dtos.Favourites
 import com.example.climatic.model.responses.ForecastResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -16,16 +17,20 @@ class LocalDataSourceImpl(private val dao: DAO) : LocalDataSource {
         }
     }
 
-    override suspend fun getAllLocations(): Flow<List<ForecastResponse>> {
-        return dao.allLocations()
+    override suspend fun getAllFavLocations(): Flow<List<Favourites>> {
+        return dao.allFavLocations()
     }
 
-    override suspend fun insertLocation(location: ForecastResponse): Long {
-        return dao.insertLocation(location)
+    override suspend fun insertFavLocation(location: Favourites): Long {
+        return dao.insertFavLocation(location)
     }
 
-    override suspend fun insertLocations(locations: List<ForecastResponse>): List<Long> {
+    override suspend fun insertLocations(locations: List<Favourites>): List<Long> {
         return dao.insertLocations(locations)
+    }
+
+    override suspend fun deleteFavLocation(location: Favourites): Int {
+        return dao.deleteFavLocation(location)
     }
 
     override suspend fun getLocationsCount(): Int {
@@ -36,7 +41,4 @@ class LocalDataSourceImpl(private val dao: DAO) : LocalDataSource {
         return dao.updateLocation(location)
     }
 
-    override suspend fun deleteLocation(location: ForecastResponse): Int {
-        return dao.deleteLocation(location)
-    }
 }

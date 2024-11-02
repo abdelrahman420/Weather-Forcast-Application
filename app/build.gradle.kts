@@ -103,7 +103,10 @@ dependencies {
     implementation ("androidx.navigation:navigation-ui-ktx:2.8.1")
 
 //settings
-    dependencies {
-        implementation("androidx.preference:preference-ktx:1.2.0")
-    }
+    implementation("androidx.preference:preference-ktx:1.2.0")
+
+//Maps
+    implementation ("org.osmdroid:osmdroid-android:6.1.10")
+    implementation ("org.osmdroid:osmdroid-wms:6.1.10")
+
 }

@@ -5,10 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".favourites_screen.view.FavouritesFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="hello_favourites_fragment" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/fab_add_location"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end|bottom"
+    android:contentDescription="Add Location"
+    android:src="@drawable/baseline_add_location_alt_24"
+    android:backgroundTint="#8b4e9e" />
 
 </FrameLayout>
