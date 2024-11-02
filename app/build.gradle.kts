@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.places)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -108,5 +109,5 @@ dependencies {
 //Maps
     implementation ("org.osmdroid:osmdroid-android:6.1.10")
     implementation ("org.osmdroid:osmdroid-wms:6.1.10")
-
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
 }
