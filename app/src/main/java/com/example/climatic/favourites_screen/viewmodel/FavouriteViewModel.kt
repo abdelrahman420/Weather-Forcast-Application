@@ -18,12 +18,12 @@ import kotlinx.coroutines.launch
 
 class FavouriteViewModel(private val repository: Repository) : ViewModel() {
 
-    private val _forecastState = MutableStateFlow<FavoriteState>(FavoriteState.Loading)
-    val forecastState: StateFlow<FavoriteState> = _forecastState
+    private val _forecastState = MutableStateFlow<List<Favourites>>(emptyList())
+    val forecastState: StateFlow<List<Favourites>> = _forecastState
 
-//    init {
-//        getFavoriteLocations()
-//    }
+    init {
+        getFavoriteLocations()
+    }
 
     fun addFavorite(location: Favourites) {
         viewModelScope.launch {
@@ -32,25 +32,18 @@ class FavouriteViewModel(private val repository: Repository) : ViewModel() {
     }
 
     fun removeFavorite(location: Favourites) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository._deleteFavLocation(location)
         }
 
     }
 
-//    fun getFavoriteLocations() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            _forecastState.value = FavoriteState.Loading
-//            repository._getAllFavLocations().catch { exception ->
-//                _forecastState.value = FavoriteState.Error("Error: ${exception.message}")
-//            }.collect { locations ->
-//                if (locations.isNotEmpty()) {
-//                    _forecastState.value = FavoriteState.Success(locations)
-//                } else {
-//                    _forecastState.value = FavoriteState.Error("No products available")
-//                }
-//            }
-//        }
-//    }
+    fun getFavoriteLocations() {
+        viewModelScope.launch {
+            repository._getAllFavLocations().collect {
+                _forecastState.value = it
+            }
+        }
+    }
 }
 

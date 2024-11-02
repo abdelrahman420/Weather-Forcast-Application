@@ -14,4 +14,9 @@
     android:src="@drawable/baseline_add_location_alt_24"
     android:backgroundTint="#8b4e9e" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFavourites"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </FrameLayout>

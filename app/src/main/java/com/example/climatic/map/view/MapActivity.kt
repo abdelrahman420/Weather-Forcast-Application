@@ -46,8 +46,7 @@ class MapActivity : AppCompatActivity() {
     lateinit var  favouriteViewModelFactory : FavouriteViewModelFactory
     private var lat : Double = 30.0;
     private var long: Double = 31.0;
-    //private var lastSelectedGeoPoint: IGeoPoint? = null // To hold the last selected location
-    private lateinit var marker: Marker // To hold the last added marker
+    private lateinit var marker: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +57,9 @@ class MapActivity : AppCompatActivity() {
             )
         )
         favouriteViewModel = ViewModelProvider(this, favouriteViewModelFactory).get(FavouriteViewModel::class.java)
-       // Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
+
         setContentView(R.layout.activity_map)
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
-//editTextSearch = findViewById(R.id.edit_text_search)
         btnAddLocation = findViewById(R.id.btn_add_location)
         mapView = findViewById(R.id.map)
         mapView.setMultiTouchControls(true)
@@ -86,69 +84,15 @@ class MapActivity : AppCompatActivity() {
         btnAddLocation.setOnClickListener {
             favouriteViewModel.addFavorite(Favourites( lat = lat, lon = long))
         }
-        //setupMap()
-        //setupAddLocationButton()
     }
-
-//    private fun setupMap() {
-//        mapView.setTileSource(TileSourceFactory.MAPNIK)
-//        mapView.setBuiltInZoomControls(true)
-//        mapView.setMultiTouchControls(true)
-//        //mapView.onCreate(null)
-//
-//        // Example: Adding a marker on map click
-//        mapView.setOnClickListener { event ->
-//            // Get clicked location and add a marker
-//            val geoPoint = mapView.projection.fromPixels(event.x.toInt(), event.y.toInt())
-//            addMarker(geoPoint)
-//        }
-//    }
-//
-//    private fun addMarker(geoPoint: IGeoPoint) {
-//        lastSelectedGeoPoint = geoPoint
-//        lastMarker?.let {
-//            mapView.overlays.remove(it)
-//        }
-//        lastMarker = Marker(mapView).apply {
-//            position = geoPoint as GeoPoint
-//            title = "Selected Location"
-//            setOnMarkerClickListener { marker, _ ->
-//                Toast.makeText(this@MapActivity, marker.title, Toast.LENGTH_SHORT).show()
-//                true
-//            }
-//        }
-//        mapView.overlays.add(lastMarker!!)
-//        mapView.invalidate()
-//        btnAddLocation.visibility = View.VISIBLE
-//    }
-
-
-
-//    private fun setupAddLocationButton() {
-//        btnAddLocation.setOnClickListener {
-//            lastSelectedGeoPoint?.let { geoPoint ->
-//                val newLocation = ForecastResponse(
-//                    latitude = geoPoint.latitude,
-//                    longitude = geoPoint.longitude,
-//                    name = "Selected Location"
-//                )
-//                viewModel.addFavorite(newLocation)
-//                Toast.makeText(this, "Location added to favorites", Toast.LENGTH_SHORT).show()
-//                btnAddLocation.visibility = View.GONE // Hide button after adding
-//            }
-//        }
-//    }
-
     override fun onResume() {
         super.onResume()
         mapView.onResume()
     }
-
     override fun onPause() {
         super.onPause()
         mapView.onPause()
     }
-
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDetach()
@@ -174,5 +118,6 @@ class MapActivity : AppCompatActivity() {
         }
         return ""
     }
+    
 }
 
