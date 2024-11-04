@@ -73,19 +73,12 @@ class HomeFragment : Fragment() {
     private var lattitude: Double = 0.0
     private var longitude: Double = 0.0
     private val REQUEST_LOCATION_CODE = 101
+    private var isFavourite: Boolean = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            lattitude = it.getDouble("latitude")
-            longitude = it.getDouble("longitude")
-        }
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -118,7 +111,8 @@ class HomeFragment : Fragment() {
         dailyAdapter = DailyAdapter()
         rvDailyForecast.adapter = dailyAdapter
 
-        settingsViewModel = ViewModelProvider(this,
+        settingsViewModel = ViewModelProvider(
+            this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
         ).get(SettingsViewModel::class.java)
 
@@ -126,9 +120,17 @@ class HomeFragment : Fragment() {
             RepositoryImpl.getInstance(
                 RemoteDataSourceImpl.getInstance(),
                 LocalDataSourceImpl.getInstance(WeatherDB.getInstance(requireContext()).dao())
-            ),settingsViewModel
+            ), settingsViewModel
         )
         homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
+
+        arguments?.let {
+            val lat = it.getDouble("lat")
+            val lon = it.getDouble("lon")
+            isFavourite = it.getBoolean("isFavourite")
+            homeViewModel.getWeatherbyLatLon(lat, lon)
+            homeViewModel.getForecastByLatLon(lat, lon)
+        }
 
         lifecycleScope.launch {
             // Collect weather state independently
@@ -146,7 +148,11 @@ class HomeFragment : Fragment() {
 
 
                         val iconId = "w${state.weather.weather[0].icon}"
-                        val resourceId = requireContext().resources?.getIdentifier(iconId, "drawable", requireContext().packageName)
+                        val resourceId = requireContext().resources?.getIdentifier(
+                            iconId,
+                            "drawable",
+                            requireContext().packageName
+                        )
                         Glide.with(requireContext())
                             .load(resourceId)
                             .placeholder(R.drawable.ic_launcher_background)
@@ -179,11 +185,23 @@ class HomeFragment : Fragment() {
 
                         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
                             .withZone(ZoneId.of("UTC"))
-                        val time = timeFormatter.format(instant.plusSeconds(state.weather.timezone?.toLong()
-                            ?: 0))
+                        val time = timeFormatter.format(
+                            instant.plusSeconds(
+                                state.weather.timezone?.toLong()
+                                    ?: 0
+                            )
+                        )
 
-                        val sunriseTime = timeFormatter.format(sunriseInstant.plusSeconds(state.weather.timezone?.toLong() ?: 0))
-                        val sunsetTime = timeFormatter.format(sunsetInstant.plusSeconds(state.weather.timezone?.toLong() ?: 0))
+                        val sunriseTime = timeFormatter.format(
+                            sunriseInstant.plusSeconds(
+                                state.weather.timezone?.toLong() ?: 0
+                            )
+                        )
+                        val sunsetTime = timeFormatter.format(
+                            sunsetInstant.plusSeconds(
+                                state.weather.timezone?.toLong() ?: 0
+                            )
+                        )
 
                         tvSunrise.text = sunriseTime
                         tvSunset.text = sunsetTime
@@ -207,7 +225,7 @@ class HomeFragment : Fragment() {
                     }
 
                     is ForecastState.Success -> {
-                        val hourlyResponse= state.forecast.toHourlyResponse()
+                        val hourlyResponse = state.forecast.toHourlyResponse()
                         Log.d(TAG, "Filtered hourly forecasts count: ${hourlyResponse}")
                         hourlyAdapter.submitList(hourlyResponse)
                         val daysResponse = state.forecast.getFiveDaysForecast()
@@ -226,46 +244,65 @@ class HomeFragment : Fragment() {
     }
 
     fun checkPermissions(): Boolean {
-        return ((checkSelfPermission(requireContext(),ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                || (checkSelfPermission(requireContext(),ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED))
+        return ((checkSelfPermission(
+            requireContext(),
+            ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED)
+                || (checkSelfPermission(
+            requireContext(),
+            ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED))
     }
-    fun enableLocationServices(){
+
+    fun enableLocationServices() {
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
         startActivity(intent)
     }
 
-    fun isLocationEnabled():Boolean{
-        val locationManager: LocationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER)
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
     @SuppressLint("MissingPermission")
-    fun getFreshLocation(){
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+    fun getFreshLocation() {
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
 
         fusedLocationProviderClient.requestLocationUpdates(
-            LocationRequest.Builder(0).apply{
+            LocationRequest.Builder(0).apply {
                 setPriority(Priority.PRIORITY_HIGH_ACCURACY)
             }.build(),
             object : LocationCallback() {
                 override fun onLocationResult(location: LocationResult) {
                     super.onLocationResult(location)
-                    longitude = location.lastLocation?.longitude?:0.0
-                    lattitude = location.lastLocation?.latitude?:0.0
-                    homeViewModel.getWeatherbyLatLon(location.lastLocation?.latitude!!, location.lastLocation?.longitude!!)
-                    homeViewModel.getForecastByLatLon(location.lastLocation?.latitude!!,location.lastLocation?.longitude!!)
+                    longitude = location.lastLocation?.longitude ?: 0.0
+                    lattitude = location.lastLocation?.latitude ?: 0.0
+                    homeViewModel.getWeatherbyLatLon(
+                        location.lastLocation?.latitude!!,
+                        location.lastLocation?.longitude!!
+                    )
+                    homeViewModel.getForecastByLatLon(
+                        location.lastLocation?.latitude!!,
+                        location.lastLocation?.longitude!!
+                    )
                 }
             },
             Looper.myLooper()
         )
     }
-    fun onRequestPermessionsResult(requestCode:Int,permissions:Array<out String>,grantResults:IntArray)
-    {
-        super.onRequestPermissionsResult(requestCode,permissions,grantResults)
-        if(requestCode==REQUEST_LOCATION_CODE){
-            if(grantResults.size>1 && grantResults.get(0)== PackageManager.PERMISSION_GRANTED)
-            {
+
+    fun onRequestPermessionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_LOCATION_CODE) {
+            if (grantResults.size > 1 && grantResults.get(0) == PackageManager.PERMISSION_GRANTED) {
                 getFreshLocation()
             }
         }
@@ -274,21 +311,23 @@ class HomeFragment : Fragment() {
     @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
-        if(checkPermissions()) {
-            if (isLocationEnabled()) {
-                getFreshLocation()
+        if (isFavourite == false) {
+            if (checkPermissions()) {
+                if (isLocationEnabled()) {
+                    getFreshLocation()
+                } else {
+                    enableLocationServices()
+                }
             } else {
-                enableLocationServices()
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(
+                        ACCESS_FINE_LOCATION,
+                        ACCESS_COARSE_LOCATION
+                    ),
+                    REQUEST_LOCATION_CODE
+                )
             }
-        }else{
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    ACCESS_FINE_LOCATION,
-                    ACCESS_COARSE_LOCATION
-                ),
-                REQUEST_LOCATION_CODE
-            )
         }
     }
 }

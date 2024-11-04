@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.climatic.map.view.MapActivity
@@ -15,6 +16,7 @@ import com.example.climatic.R
 import com.example.climatic.favourites_screen.view.FavAdapter
 import com.example.climatic.favourites_screen.viewmodel.FavouriteViewModel
 import com.example.climatic.favourites_screen.viewmodel.FavouriteViewModelFactory
+import com.example.climatic.home_screen.view.HomeFragment
 import com.example.climatic.model.database.LocalDataSourceImpl
 import com.example.climatic.model.database.WeatherDB
 import com.example.climatic.model.dtos.Favourites
@@ -51,7 +53,17 @@ class FavouritesFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
         favouritesAdapter = FavAdapter(myListener = { favourite ->
-
+            val homeFragment = HomeFragment().apply {
+                arguments = Bundle().apply {
+                    putDouble("lat", favourite.lat)
+                    putDouble("lon", favourite.lon)
+                    putBoolean("isFavourite", true)
+                }
+            }
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, homeFragment)
+                .addToBackStack(null)
+                .commit()
         },
             removeListener = { favourite ->
                 favouriteViewModel.removeFavorite(Favourites(favourite.lat, favourite.lon))
