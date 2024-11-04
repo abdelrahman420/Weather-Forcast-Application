@@ -53,8 +53,8 @@ class DailyAdapter : ListAdapter<Wlist, DailyAdapter.ViewHolder>(DailyDiffUtil()
         holder.windSpeedTextView.text = "${dayForecast.wind?.speed}"
         holder.pressureTextView.text = "${dayForecast.main?.pressure} hPa"
         holder.cloudsTextView.text = "${dayForecast.clouds?.all}%"
-        holder.tvMax.text = "${dayForecast.main?.tempMax}°C"
-        holder.tvMin.text = "${dayForecast.main?.tempMin}°C"
+        holder.tvMax.text = "${dayForecast.main?.tempMax}"
+        holder.tvMin.text = "${dayForecast.main?.tempMin}"
         val iconId = "w${dayForecast.weather.firstOrNull()?.icon}"
         val context = holder.itemView.context
         val resourceId =
