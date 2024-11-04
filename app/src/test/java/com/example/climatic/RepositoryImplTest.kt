@@ -31,7 +31,7 @@ class RepositoryImplTest {
     }
 
     @Test
-    fun `getCurrentWeatherByCity returns correct weather response`() = runBlocking {
+    fun getCurrentWeatherByCity_returns_correct_weather_response() = runBlocking {
         // Arrange
         val mockWeatherResponse = WeatherResponse(
             coord = Coord(lon = -0.1257, lat = 51.5085),
@@ -60,7 +60,7 @@ class RepositoryImplTest {
     }
 
     @Test
-    fun `insertFavLocation should add location to local data source`() = runBlocking {
+    fun insertFavLocation_should_add_location_to_local_data_source() = runBlocking {
         // Arrange
         val mockLocation = Favourites(lat = 40.7128, lon = -74.0060)
 

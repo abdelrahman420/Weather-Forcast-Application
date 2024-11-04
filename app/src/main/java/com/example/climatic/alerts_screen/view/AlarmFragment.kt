@@ -33,7 +33,6 @@ class AlarmFragment : Fragment() {
         alarmTypeSpinner = view.findViewById(R.id.alarmTypeSpinner)
         alarmRecyclerView = view.findViewById(R.id.alarmRecyclerView)
 
-        // Set up the RecyclerView and Adapter
         alarmAdapter = AlarmAdapter(viewModel,
             { alarmId ->
                 viewModel.removeAlarm(alarmId)
@@ -65,18 +64,14 @@ class AlarmFragment : Fragment() {
     private fun setAlarm() {
         val hour = timePicker.hour
         val minute = timePicker.minute
-
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
         }
-
         val duration = calendar.timeInMillis - System.currentTimeMillis()
         val selectedAlarmType = alarmTypeSpinner.selectedItem.toString()
-
         if (duration > 0) {
-            // Pass hour and minute to the ViewModel
             viewModel.setAlert(duration, selectedAlarmType, hour, minute)
             Toast.makeText(requireContext(), "Alarm set for $hour:$minute with type $selectedAlarmType", Toast.LENGTH_SHORT).show()
         } else {

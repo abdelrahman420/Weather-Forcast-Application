@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
@@ -69,6 +70,9 @@ class HomeFragment : Fragment() {
     private lateinit var tvSunrise: TextView
     private lateinit var tvSunset: TextView
     private lateinit var tvfeelsLike: TextView
+    private lateinit var tvTemperatureUnit: TextView
+    private lateinit var tvFeelsLikeTempUnit: TextView
+    private lateinit var tvWindSpeedUnit: TextView
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lattitude: Double = 0.0
     private var longitude: Double = 0.0
@@ -85,7 +89,7 @@ class HomeFragment : Fragment() {
     @SuppressLint("NewApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        tvTemperatureUnit = view.findViewById(R.id.tvTemperatureUnit)
         tvCity = view.findViewById(R.id.tvCity)
         tvTemperature = view.findViewById(R.id.tvTemperature)
         tvWeatherDescription = view.findViewById(R.id.tvWeatherDescription)
@@ -100,7 +104,8 @@ class HomeFragment : Fragment() {
         tvSunrise = view.findViewById(R.id.tvsunrise)
         tvSunset = view.findViewById(R.id.tvsunset)
         tvfeelsLike = view.findViewById(R.id.tvFeelsLikeTemp)
-
+        tvFeelsLikeTempUnit = view.findViewById(R.id.tvFeelsLikeTempUnit)
+        tvWindSpeedUnit = view.findViewById(R.id.tvWindSpeedValueUnit)
         rvHourlyForecast.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         hourlyAdapter = HourlyAdapter()
@@ -133,18 +138,36 @@ class HomeFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            // Collect weather state independently
             homeViewModel.weatherState.collect { state ->
                 when (state) {
                     is WeatherState.Loading -> {
-                        Log.d(TAG, "Loading weather data...")
+                        Toast.makeText(requireContext(), "Loading...", Toast.LENGTH_SHORT).show()
                     }
-
                     is WeatherState.Success -> {
-                        // Update the weather data in the UI
                         tvCity.text = state.weather.name
-                        tvTemperature.text = "${state.weather.main?.temp}°C"
+                        tvTemperature.text = "${state.weather.main?.temp}"
                         tvWeatherDescription.text = state.weather.weather[0].description
+                        if(settingsViewModel.selectedTemperatureUnit.value == "metric")
+                        {
+                            tvTemperatureUnit.text = "°C"
+                            tvFeelsLikeTempUnit.text = "°C"
+                            tvWindSpeedUnit.text = "m/s"
+
+                        }
+                        else if(settingsViewModel.selectedTemperatureUnit.value == "standard")
+                        {
+                            tvTemperatureUnit.text = "°K"
+                            tvFeelsLikeTempUnit.text = "°K"
+                            tvWindSpeedUnit.text = "m/s"
+
+                        }
+                        else
+                        {
+                            tvTemperatureUnit.text = "°F"
+                            tvFeelsLikeTempUnit.text = "°F"
+                            tvWindSpeedUnit.text = "m/h"
+
+                        }
 
 
                         val iconId = "w${state.weather.weather[0].icon}"
@@ -168,7 +191,7 @@ class HomeFragment : Fragment() {
                         tvWindSpeedValue.text = "${state.weather.wind?.speed}"
                         tvPressureValue.text = "${state.weather.main?.pressure} hPa"
                         tvCloudsValue.text = "${state.weather.clouds?.all}%"
-                        tvfeelsLike.text = "${state.weather.main?.feelsLike}°C"
+                        tvfeelsLike.text = "${state.weather.main?.feelsLike}"
 
 
                         val sunriseTimestamp = state.weather.sys?.sunrise ?: 0

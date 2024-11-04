@@ -37,14 +37,8 @@ class FavouriteViewModelTest {
         Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
     }
 
-//    @Before
-//    fun setup() {
-//        fakeRepository = FakeRepository()
-//        viewModel = FavouriteViewModel(fakeRepository)
-//    }
-
     @Test
-    fun `addFavorite adds location to favorites`() = runTest {
+    fun addFavorite_adds_location_to_favorites() = runTest {
         // Arrange
         val mockLocation = Favourites(lat = 40.7128, lon = -74.0060)
 
@@ -57,7 +51,7 @@ class FavouriteViewModelTest {
     }
 
     @Test
-    fun `removeFavorite removes location from favorites`() = runTest {
+    fun removeFavorite_removes_location_from_favorites() = runTest {
         // Arrange
         val mockLocation = Favourites(lat = 40.7128, lon = -74.0060)
         viewModel.addFavorite(mockLocation)

@@ -48,7 +48,6 @@ class SettingsFragment : Fragment() {
         radioKelvin = view.findViewById(R.id.temperature_kelvin)
         radioFahrenheit = view.findViewById(R.id.temperature_fahrenheit)
 
-        // Observe selected temperature unit
         settingsViewModel.selectedTemperatureUnit.observe(viewLifecycleOwner) { unit ->
             when (unit) {
                 "standard" -> temperatureUnitGroup.check(radioKelvin.id)

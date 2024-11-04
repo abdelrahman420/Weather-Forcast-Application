@@ -15,6 +15,16 @@
         <!-- City Name -->
 
         <TextView
+            android:id="@+id/tvFeelsLikeTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvFeelsLike"
+            app:layout_constraintStart_toEndOf="@+id/tvFeelsLike"
+            tools:text="21°" />
+
+        <TextView
             android:id="@+id/tvTemperatureUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -112,14 +122,14 @@
             tools:text="clear sky" />
 
         <TextView
-            android:id="@+id/tvFeelsLikeTemp"
+            android:id="@+id/tvFeelsLikeTempUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/tvFeelsLike"
-            app:layout_constraintStart_toEndOf="@+id/tvFeelsLike"
-            tools:text="21°" />
+            app:layout_constraintStart_toEndOf="@+id/tvFeelsLikeTemp"
+            tools:text="C" />
 
         <TextView
             android:id="@+id/tvFeelsLike"

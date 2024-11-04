@@ -47,10 +47,10 @@ class DailyAdapter : ListAdapter<Wlist, DailyAdapter.ViewHolder>(DailyDiffUtil()
         val date: Date = inputFormat.parse(dayForecast.dtTxt)
         val outputFormat = SimpleDateFormat("EEEE", Locale.getDefault())
         holder.dayTextView.text = outputFormat.format(date)
-        holder.temperatureTextView.text = "${dayForecast.main?.temp} °C"
+        holder.temperatureTextView.text = "${dayForecast.main?.temp}"
         holder.weatherDescriptionTextView.text = dayForecast.weather.firstOrNull()?.description
         holder.humidityTextView.text = "${dayForecast.main?.humidity}%"
-        holder.windSpeedTextView.text = "${dayForecast.wind?.speed} km/h"
+        holder.windSpeedTextView.text = "${dayForecast.wind?.speed}"
         holder.pressureTextView.text = "${dayForecast.main?.pressure} hPa"
         holder.cloudsTextView.text = "${dayForecast.clouds?.all}%"
         holder.tvMax.text = "${dayForecast.main?.tempMax}°C"
