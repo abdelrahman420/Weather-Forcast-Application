@@ -22,7 +22,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create notification channel for Android O and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "weather_alerts_channel",
@@ -32,11 +31,8 @@ class AlarmReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Create an intent to open the app when the notification is clicked
         val notificationIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        // Build the notification
         val notification = NotificationCompat.Builder(context, "weather_alerts_channel")
             .setContentTitle("Weather Alert")
             .setContentText("It's time for your weather alert!")
@@ -47,7 +43,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
         notificationManager.notify(1, notification)
 
-        // Play sound if the alarm type is "Sound"
         val alarmType = intent?.getStringExtra("ALARM_TYPE")
         if (alarmType == "Sound") {
             playSound(context)
@@ -55,14 +50,12 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun playSound(context: Context?) {
-        // Release any existing MediaPlayer before creating a new one
         mediaPlayer?.release()
 
-        // Create a new MediaPlayer instance
-        mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound) // Use your sound file here
+
+        mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound)
         mediaPlayer?.start()
 
-        // Stop and release the MediaPlayer when the sound is done playing
         mediaPlayer?.setOnCompletionListener {
             it.release()
             mediaPlayer = null

@@ -11,6 +11,8 @@ import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.climatic.R
 import com.example.climatic.alerts_screen.viewmodel.AlarmViewModel
 import java.util.Calendar
@@ -20,17 +22,31 @@ class AlarmFragment : Fragment() {
     private val viewModel: AlarmViewModel by viewModels()
     private lateinit var timePicker: TimePicker
     private lateinit var setAlarmButton: Button
-    private lateinit var stopAlarmButton: Button
     private lateinit var alarmTypeSpinner: Spinner
+    private lateinit var alarmRecyclerView: RecyclerView
+    private lateinit var alarmAdapter: AlarmAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_alarm, container, false)
         timePicker = view.findViewById(R.id.timePicker)
         setAlarmButton = view.findViewById(R.id.setAlarmButton)
-        stopAlarmButton = view.findViewById(R.id.stopAlarmButton)
         alarmTypeSpinner = view.findViewById(R.id.alarmTypeSpinner)
+        alarmRecyclerView = view.findViewById(R.id.alarmRecyclerView)
 
-        // Set up the Spinner for alarm types
+        // Set up the RecyclerView and Adapter
+        alarmAdapter = AlarmAdapter(viewModel,
+            { alarmId ->
+                viewModel.removeAlarm(alarmId)
+            }
+        )
+        alarmRecyclerView.adapter = alarmAdapter
+        alarmRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        viewModel.alarms.observe(viewLifecycleOwner) { alarms ->
+            alarmAdapter.submitList(alarms)
+            alarmAdapter.notifyDataSetChanged()
+        }
+
         ArrayAdapter.createFromResource(
             requireContext(),
             R.array.alarm_types,
@@ -43,11 +59,6 @@ class AlarmFragment : Fragment() {
         setAlarmButton.setOnClickListener {
             setAlarm()
         }
-
-        stopAlarmButton.setOnClickListener {
-            stopAlarm()
-        }
-
         return view
     }
 
@@ -65,15 +76,13 @@ class AlarmFragment : Fragment() {
         val selectedAlarmType = alarmTypeSpinner.selectedItem.toString()
 
         if (duration > 0) {
-            viewModel.setAlert(duration, selectedAlarmType)
+            // Pass hour and minute to the ViewModel
+            viewModel.setAlert(duration, selectedAlarmType, hour, minute)
             Toast.makeText(requireContext(), "Alarm set for $hour:$minute with type $selectedAlarmType", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(requireContext(), "Please select a future time.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun stopAlarm() {
-        viewModel.stopAlert()
-        Toast.makeText(requireContext(), "Weather alert stopped.", Toast.LENGTH_SHORT).show()
-    }
+
 }
