@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName
 data class WeatherResponse(
 
     @SerializedName("coord") var coord: Coord? = Coord(),
-    @SerializedName("weather") var weather: ArrayList<Weather> = arrayListOf(),
+    @SerializedName("weather") var weather: List<Weather> = arrayListOf(),
     @SerializedName("base") var base: String? = null,
     @SerializedName("main") var main: Main? = Main(),
     @SerializedName("visibility") var visibility: Int? = null,

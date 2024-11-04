@@ -35,7 +35,14 @@ android {
         jvmTarget = "1.8"
     }
 }
-
+val coroutinesVersion = "1.7.1"
+val junitVersion = "4.13.2"
+val hamcrestVersion = "1.3"
+val archTestingVersion = "2.1.0"
+val robolectricVersion = "4.6.1"
+val androidXTestExtKotlinRunnerVersion = "1.1.3"
+val androidXTestCoreVersion = "1.5.0"
+val kotlin_version = "1.8.0"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -44,10 +51,35 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.places)
+    implementation(libs.androidx.junit.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.junit.ktx)
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation ("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:<version>")
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.hamcrest:hamcrest-library:2.2")
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
+    androidTestImplementation("org.hamcrest:hamcrest-library:2.2")
+
+    testImplementation ("junit:junit:$junitVersion")
+    testImplementation ("org.hamcrest:hamcrest-all:$hamcrestVersion")
+    testImplementation ("androidx.arch.core:core-testing:$archTestingVersion")
+
+    testImplementation ("androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion")
+    testImplementation ("androidx.test:core-ktx:$androidXTestCoreVersion")
+    testImplementation ("org.robolectric:robolectric:4.8")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
     // Gson library for converting Java objects to JSON and vice versa
     implementation("com.google.code.gson:gson:2.11.0")
 
@@ -63,18 +95,11 @@ dependencies {
 // Glide compiler for annotation processing (required for Glide)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-// Room library for database persistence
-    implementation("androidx.room:room-runtime:2.6.1")
-
-// Room annotation processor for generating database code
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-
-// Kotlin Annotation Processing Tool (KAPT) for Room's annotation processor in Kotlin
-    kapt("androidx.room:room-compiler:2.6.1")
-
-// Room KTX extensions for Kotlin-friendly APIs
-    implementation("androidx.room:room-ktx:2.6.1")
-
+//Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    kapt ("com.github.bumptech.glide:compiler:4.16.0")
 // Lifecycle extensions for managing Android lifecycle states (deprecated but still used in some projects)
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
 
@@ -110,4 +135,11 @@ dependencies {
     implementation ("org.osmdroid:osmdroid-android:6.1.10")
     implementation ("org.osmdroid:osmdroid-wms:6.1.10")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+
+
+//Testing
+    testImplementation ("androidx.arch.core:core-testing:2.1.0") // For LiveData and Coroutines testing
+    testImplementation ("androidx.room:room-testing:2.5.0" )      // Replace with your Room version
+    testImplementation ("junit:junit:4.13.2")
 }

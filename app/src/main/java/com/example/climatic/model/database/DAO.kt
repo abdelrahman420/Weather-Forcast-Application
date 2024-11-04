@@ -18,8 +18,9 @@ interface DAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFavLocation(location: Favourites): Long
+
     @Delete
-    fun deleteFavLocation(location: Favourites) : Int
+    fun deleteFavLocation(location: Favourites): Int
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertLocations(locations: List<Favourites>): List<Long>

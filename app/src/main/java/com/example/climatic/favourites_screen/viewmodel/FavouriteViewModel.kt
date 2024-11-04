@@ -1,19 +1,13 @@
 package com.example.climatic.favourites_screen.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.climatic.model.FavoriteState
-import com.example.climatic.model.ForecastState
 import com.example.climatic.model.dtos.Favourites
 import com.example.climatic.model.repository.Repository
-import com.example.climatic.model.responses.ForecastResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class FavouriteViewModel(private val repository: Repository) : ViewModel() {
@@ -26,24 +20,31 @@ class FavouriteViewModel(private val repository: Repository) : ViewModel() {
     }
 
     fun addFavorite(location: Favourites) {
-        viewModelScope.launch {
-            repository._insertFavLocation(location)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository._insertFavLocation(location)
+                getFavoriteLocations()
+            } catch (e: Exception) {
+            }
         }
     }
 
     fun removeFavorite(location: Favourites) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository._deleteFavLocation(location)
-        }
+            try {
+                repository._deleteFavLocation(location)
+                getFavoriteLocations()
+            } catch (e: Exception) {
 
+            }
+        }
     }
 
-    fun getFavoriteLocations() {
-        viewModelScope.launch {
-            repository._getAllFavLocations().collect {
-                _forecastState.value = it
+    private fun getFavoriteLocations() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository._getAllFavLocations().collect { favorites ->
+                _forecastState.value = favorites
             }
         }
     }
 }
-
